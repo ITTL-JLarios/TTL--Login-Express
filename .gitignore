@@ -1,1 +1,2 @@
-/ttl-login-express
+/ttl-login-express/node_modules
+.env
