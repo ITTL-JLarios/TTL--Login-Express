@@ -19,9 +19,6 @@ timeRouter.post('/', async (req, res) => {
     const events = userFromDB?.events;
     const last_login = events[events.length - 1];
     console.log(last_login);
-    if (status === 'logout' && last_login['type'] === 'login') {
-        console.log('calculating time');
-    }
     const userIDObj = userFromDB?._id || null;
     if (!userFromDB) {
         return res.status(404).send({ error: "User not Found!" });
@@ -33,6 +30,16 @@ timeRouter.post('/', async (req, res) => {
             ip: userIP,
             type: status,
         };
+        if (status === 'logout' && last_login['type'] === 'login') {
+            let delta = (currentTime - last_login['timestamp']) / 1000;
+            let hours = Math.floor(delta / 3600);
+            delta -= hours * 3600;
+            let minutes = Math.floor(delta / 60) % 60;
+            delta -= minutes * 60;
+            let seconds = delta % 60;
+            console.log(hours, minutes, seconds);
+            report['time_total'] = `${hours}:${minutes}:${seconds}`;
+        }
         const event = await new Events(report);
         event.save();
         const user = await Users.findOneAndUpdate({ username: userName }, { $push: { events: event._id } });

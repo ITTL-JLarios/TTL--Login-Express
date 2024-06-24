@@ -10,7 +10,7 @@ export interface IEvent {
     ip: string;
     event_user: Object;
     type: EventType;
-    time_total?: number;
+    time_total?: string;
 }
 
 export const EventSchema = new Schema<IEvent>(
@@ -19,7 +19,7 @@ export const EventSchema = new Schema<IEvent>(
         ip: { type: String, required: true },
         event_user: {type: Types.ObjectId, ref: 'Users'},
         type: { type: String, enum: EventType, required: true},
-        time_total: { type: Number, required: false },
+        time_total: { type: String, required: false },
     }
 )
 

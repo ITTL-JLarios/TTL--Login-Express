@@ -11,7 +11,7 @@ interface Attend {
     ip: string;
     event_user: Object;
     type: string;
-    time_total?: number; 
+    time_total?: string; 
 }
 
 timeRouter.get('/', async (req: Request, res: Response) => {
@@ -21,7 +21,7 @@ timeRouter.get('/', async (req: Request, res: Response) => {
 
 timeRouter.post('/', async (req: Request, res: Response) => {
     /* Get Current Time */
-    const currentTime = new Date();
+    const currentTime: any = new Date();
     console.log(currentTime.getDay())
     currentTime.setHours( currentTime.getHours() - 6 )
 
@@ -39,10 +39,6 @@ timeRouter.post('/', async (req: Request, res: Response) => {
     const last_login = events[events.length - 1]
     console.log(last_login)
 
-    if (status === 'logout' && last_login['type'] === 'login') {
-        console.log('calculating time')
-    }
-
     const userIDObj = userFromDB?._id || null
     if ( !userFromDB ) {
         return res.status(404).send({error: "User not Found!"})
@@ -54,6 +50,21 @@ timeRouter.post('/', async (req: Request, res: Response) => {
             event_user: userIDObj,
             ip: userIP,
             type: status,
+        }
+
+        if (status === 'logout' && last_login['type'] === 'login') {
+            let delta = (currentTime - last_login['timestamp']) / 1000;
+            
+            let hours = Math.floor(delta / 3600);
+            delta -= hours * 3600;
+            
+            let minutes = Math.floor(delta / 60) % 60;
+            delta -= minutes * 60;
+
+            let seconds = delta % 60;
+    
+            console.log(hours, minutes, seconds)
+            report['time_total'] = `${hours}:${minutes}:${seconds}`
         }
 
         /* Craete new Event */
@@ -72,10 +83,3 @@ timeRouter.post('/', async (req: Request, res: Response) => {
 })
 
 export default timeRouter;
-
-// Features
-/*
-- Amount of worked hours per week
-- user Status
-
-*/

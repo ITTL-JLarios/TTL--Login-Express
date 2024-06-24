@@ -9,6 +9,6 @@ export const EventSchema = new Schema({
     ip: { type: String, required: true },
     event_user: { type: Types.ObjectId, ref: 'Users' },
     type: { type: String, enum: EventType, required: true },
-    time_total: { type: Number, required: false },
+    time_total: { type: String, required: false },
 });
 export const Events = model('Events', EventSchema);
